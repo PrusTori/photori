@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTabPane?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="630.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.viktoriia.photori.fxapp.admin.ControllerAdmin">
+   <children>
+      <JFXTabPane prefHeight="400.0" prefWidth="630.0">
+         <tabs>
+            <Tab fx:id="tabOrders" text="Заказы">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="tableOrders" layoutX="14.0" layoutY="14.0" prefHeight="300.0" prefWidth="600.0" />
+                        <JFXButton fx:id="buttonOrders" layoutX="554.0" layoutY="326.0" text="Удалить" />
+                     </children></AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="tabClients" text="Клиенты">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="tableClients" layoutX="14.0" layoutY="14.0" prefHeight="300.0" prefWidth="600.0" />
+                        <JFXButton fx:id="buttonClients" layoutX="554.0" layoutY="326.0" text="Удалить" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="tabRooms" text="Комнаты">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="tableRooms" layoutX="14.0" layoutY="14.0" prefHeight="300.0" prefWidth="600.0" />
+                        <JFXButton fx:id="buttonRooms" layoutX="556.0" layoutY="326.0" text="Удалить" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="tabTypes" text="Типы съемок">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="tableTypes" layoutX="14.0" layoutY="14.0" prefHeight="300.0" prefWidth="600.0" />
+                        <JFXButton fx:id="buttonType" layoutX="562.0" layoutY="326.0" text="Удалить" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="tabPhotos" text="Фотографии">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ScrollPane layoutX="14.0" layoutY="14.0" prefHeight="256.0" prefWidth="603.0">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+                          </content>
+                        </ScrollPane>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+         </tabs>
+      </JFXTabPane>
+   </children>
+</AnchorPane>

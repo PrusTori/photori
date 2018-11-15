@@ -2,17 +2,20 @@ package com.viktoriia.photori.fxapp.app;
 
 import com.jfoenix.controls.*;
 import com.viktoriia.photori.db.DatabaseConnector;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
-import org.intellij.lang.annotations.Language;
 
 import javax.swing.*;
+
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
+
+import org.intellij.lang.annotations.Language;
 
 public class ControllerPhotori {
 
@@ -68,8 +71,15 @@ public class ControllerPhotori {
 
             } else {
 
-            databaseConnector.sql("");
-
+                databaseConnector.sql(
+                        "select create_order(" + textMail.getText() + ", " +
+                                comboType.getSelectionModel().getSelectedItem() + ", " +
+                                date.getValue().toString() + " " + time.getValue().toString() + ", " +
+                                textTime.getText() + ", " +
+                                comboRoom.getSelectionModel().getSelectedItem() + ", " +
+                                textLocation.getText() + ", " +
+                                textQuantity.getText() + ", " +
+                                labelPrice.getText() + ")");
             }
 
         });

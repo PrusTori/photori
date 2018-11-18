@@ -1,6 +1,7 @@
 package com.viktoriia.photori.db;
 
 import org.intellij.lang.annotations.Language;
+import org.postgresql.util.PSQLException;
 
 import java.sql.*;
 
@@ -19,16 +20,24 @@ public class DatabaseConnector {
 
     }
 
-    public void sql(@Language("SQL") String sql) {
+    public int sql(@Language("SQL") String sql) {
         try {
             Statement statement = connection.createStatement(
                     ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE
             );
-            statement.executeUpdate(sql);
+            System.out.println(sql);
+            int result = 0;
+            try {
+                result = statement.executeUpdate(sql);
+            } catch (PSQLException ignored) {
+            }
+
             statement.close();
+            return result;
         } catch (SQLException e) {
             e.printStackTrace();
+            return -1;
         }
 
     }

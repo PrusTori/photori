@@ -15,8 +15,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.fxml.FXML;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
+import javafx.scene.layout.GridPane;
 import org.intellij.lang.annotations.Language;
 
 public class ControllerPhotori {
@@ -41,7 +43,7 @@ public class ControllerPhotori {
     private JFXButton buttonOrder;
 
     @FXML
-    private AnchorPane anchor;
+    private AnchorPane anchorScrollPhotosets;
 
     private DatabaseConnector databaseConnector;
 
@@ -49,7 +51,7 @@ public class ControllerPhotori {
             priceOverPhoto = 0,
             priceRoom = 0;
 
-    String[][] type, room;
+    String[][] type, room, photosets, photos;
 
     public void initialize()
             throws SQLException, ClassNotFoundException {
@@ -66,6 +68,7 @@ public class ControllerPhotori {
                 textLocationAddress.setDisable(false);
                 textLocationName.setDisable(false);
                 room = null;
+                labelRoomInfo.setText(". . .");
             } else {
                 textLocationAddress.setDisable(true);
                 textLocationName.setDisable(true);
@@ -74,6 +77,9 @@ public class ControllerPhotori {
                         "select * from rooms where name = '"
                                 + comboRoom.getSelectionModel().getSelectedItem() + "'"
                 );
+                labelRoomInfo.setText("Размеры комнаты: " + room[1][2]
+                        + "\nЦена за час: " + room[1][3]
+                        + (room[1][4] != null ? "\nЗаметки: " + room[1][4] : ""));
             }
             calculatePriceTime();
 
@@ -84,6 +90,7 @@ public class ControllerPhotori {
                 comboType.getSelectionModel().clearSelection();
                 textOverPhotoQuantity.setVisible(false);
                 type = null;
+                labelTypeInfo.setText(". . .");
             } else {
                 textOverPhotoQuantity.setVisible(true);
 
@@ -91,6 +98,9 @@ public class ControllerPhotori {
                         "select * from types where title = '"
                                 + comboType.getSelectionModel().getSelectedItem() + "'"
                 );
+                labelTypeInfo.setText("\nЦена за час: " + type[1][2]
+                        + "\nКол-во фотографий, входящих в пакет: " + type[1][3]
+                        + "\nЦена за каждую последующую фотографию: " + type[1][4]);
             }
             calculatePriceTime();
 
@@ -145,9 +155,52 @@ public class ControllerPhotori {
                                         : Integer.parseInt(textOverPhotoQuantity.getText())) + ", " +
                                 labelPrice.getText() + ")"
                 );
+
+                JOptionPane.showMessageDialog(
+                        JOptionPane.getRootFrame(),
+                        "Спасибо за проявленный Вами интерес к нашей фотостудии!\n" +
+                                "Мы свяжемся с Вами по указанным контактным данным."
+                );
             }
 
         });
+
+        photosets = databaseConnector.getSql(
+                "select * from photosets"
+        );
+
+        photos = databaseConnector.getSql(
+                "select * from photos"
+        );
+
+        Label labelPhotosetTitle1 = new Label(photosets[1][3]);
+        ImageView imageViewPhoto1 = new ImageView(photos[1][2]);
+        imageViewPhoto1.setFitHeight(150);
+        imageViewPhoto1.setFitWidth(230);
+        imageViewPhoto1.setOpacity(0.75);
+        imageViewPhoto1.setOnMouseEntered(event -> imageViewPhoto1.setOpacity(1));
+        imageViewPhoto1.setOnMouseExited(event -> imageViewPhoto1.setOpacity(0.75));
+        ImageView imageViewPhoto2 = new ImageView(photos[2][2]);
+        imageViewPhoto2.setFitHeight(150);
+        imageViewPhoto2.setFitWidth(230);
+        imageViewPhoto2.setOpacity(0.75);
+        imageViewPhoto2.setOnMouseEntered(event -> imageViewPhoto2.setOpacity(1));
+        imageViewPhoto2.setOnMouseExited(event -> imageViewPhoto2.setOpacity(0.75));
+        ImageView imageViewPhoto3 = new ImageView(photos[3][2]);
+        imageViewPhoto3.setFitHeight(150);
+        imageViewPhoto3.setFitWidth(230);
+        imageViewPhoto3.setOpacity(0.75);
+        imageViewPhoto3.setOnMouseEntered(event -> imageViewPhoto3.setOpacity(1));
+        imageViewPhoto3.setOnMouseExited(event -> imageViewPhoto3.setOpacity(0.75));
+        GridPane gridPhotos = new GridPane();
+        gridPhotos.add(labelPhotosetTitle1, 1, 0);
+        gridPhotos.add(imageViewPhoto1, 0, 1);
+        gridPhotos.add(imageViewPhoto2, 1, 1);
+        gridPhotos.add(imageViewPhoto3, 2, 1);
+//        gridPhotos.getChildren().get(0).setLayoutX(100);
+
+        anchorScrollPhotosets.getChildren().addAll(gridPhotos);
+        anchorScrollPhotosets.getChildren().get(0).setLayoutX(5);
 
     }
 
@@ -193,7 +246,8 @@ public class ControllerPhotori {
             priceType = 0;
         }
 
-        if (!textOverPhotoQuantity.getText().isEmpty()) {
+        if (!textOverPhotoQuantity.getText().isEmpty()
+                && !comboType.getSelectionModel().isEmpty()) {
             try {
                 priceOverPhoto =
                         (type[1][3].equals("-1")

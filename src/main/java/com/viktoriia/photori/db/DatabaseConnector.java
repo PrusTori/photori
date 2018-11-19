@@ -20,31 +20,28 @@ public class DatabaseConnector {
 
     }
 
-    public int sql(@Language("SQL") String sql) {
+    public void sql(@Language("SQL") String sql) {
         try {
+            System.out.println(sql);
             Statement statement = connection.createStatement(
                     ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE
             );
-            System.out.println(sql);
-            int result = 0;
             try {
-                result = statement.executeUpdate(sql);
+                statement.executeUpdate(sql);
             } catch (PSQLException ignored) {
             }
 
             statement.close();
-            return result;
         } catch (SQLException e) {
             e.printStackTrace();
-            return -1;
         }
 
     }
 
     public String[][] getSql(@Language("SQL") String sql) {
         try {
-
+            System.out.println(sql);
             Statement statement = connection.createStatement(
                     ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE

@@ -11,11 +11,11 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="630.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.viktoriia.photori.fxapp.app.ControllerPhotori">
+<AnchorPane prefHeight="500.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.viktoriia.photori.fxapp.app.ControllerPhotori">
     <children>
-        <JFXTabPane prefHeight="400.0" prefWidth="630.0">
+        <JFXTabPane prefHeight="500.0" prefWidth="720.0">
             <tabs>
-                <Tab fx:id="tab1" text="Сделать заказ">
+                <Tab text="Сделать заказ">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="260.0">
                             <children>
@@ -23,39 +23,39 @@
                                 <JFXTextField fx:id="textName" layoutX="14.0" layoutY="45.0" prefHeight="25.0" prefWidth="170.0" promptText="Введите ФИО" />
                                 <JFXTextField fx:id="textPhone" layoutX="14.0" layoutY="87.0" prefHeight="25.0" prefWidth="170.0" promptText="Номер телефона" />
                                 <JFXTextField fx:id="textMail" layoutX="14.0" layoutY="130.0" prefHeight="25.0" prefWidth="170.0" promptText="e-mail" />
-                                <Label layoutX="251.0" layoutY="15.0" text="Дата и время" />
-                                <JFXDatePicker fx:id="date" layoutX="219.0" layoutY="45.0" prefHeight="25.0" prefWidth="170.0" />
-                                <JFXTimePicker fx:id="time" layoutX="219.0" layoutY="90.0" prefHeight="25.0" prefWidth="170.0" />
-                                <JFXTextField fx:id="textTime" layoutX="231.0" layoutY="134.0" prefHeight="26.0" prefWidth="118.0" promptText="Количесво часов" />
-                                <Label layoutX="479.0" layoutY="14.0" text="Вид съемки" />
-                                <JFXComboBox fx:id="comboType" focusColor="#eeeff2" layoutX="435.0" layoutY="45.0" prefHeight="25.0" prefWidth="170.0" promptText="Выберите вид съемки" />
+                                <Label layoutX="265.0" layoutY="15.0" text="Дата и время" />
+                                <JFXDatePicker fx:id="date" layoutX="233.0" layoutY="45.0" prefHeight="25.0" prefWidth="170.0" />
+                                <JFXTimePicker fx:id="time" layoutX="233.0" layoutY="90.0" prefHeight="25.0" prefWidth="170.0" />
+                                <JFXTextField fx:id="textTime" layoutX="245.0" layoutY="134.0" prefHeight="26.0" prefWidth="118.0" promptText="Количесво часов" />
+                                <Label layoutX="530.0" layoutY="15.0" text="Вид съемки" />
+                                <JFXComboBox fx:id="comboType" focusColor="#eeeff2" layoutX="486.0" layoutY="46.0" prefHeight="25.0" prefWidth="170.0" promptText="Выберите вид съемки" />
                                 <JFXTextField fx:id="textOverPhotoQuantity" layoutX="435.0" layoutY="90.0" prefWidth="170.0" promptText="Дополительные фото" visible="false" />
-                        <Label layoutX="484.0" layoutY="122.0" text="Описание" />
-                        <Label fx:id="labelTypeInfoi" layoutX="436.0" layoutY="147.0" text=". . ." />
-                                <Label layoutX="281.0" layoutY="183.0" text="Локация" />
-                                <JFXComboBox fx:id="comboRoom" layoutX="88.0" layoutY="220.0" prefHeight="26.0" prefWidth="199.0" promptText="Выберите комнату для аренды" />
-                        <Label layoutX="160.0" layoutY="259.0" text="Описание" />
-                        <Label fx:id="labelRoomInfo" layoutX="88.0" layoutY="284.0" text=". . ." />
-                                <Label layoutX="310.0" layoutY="250.0" text="или" />
-                                <JFXTextField fx:id="textLocationAddress" layoutX="365.0" layoutY="220.0" prefWidth="170.0" promptText="Адресс локации" />
-                                <JFXTextField fx:id="textLocationName" layoutX="363.0" layoutY="258.0" prefHeight="26.0" prefWidth="170.0" promptText="Название локации" />
-                                <Label layoutX="259.0" layoutY="318.0" prefHeight="35.0" prefWidth="90.0" text="Итоговая цена:" />
-                                <Label fx:id="labelPrice" layoutX="358.0" layoutY="328.0" text="            " />
-                                <JFXButton fx:id="buttonOrder" layoutX="511.0" layoutY="319.0" prefHeight="35.0" prefWidth="101.0" text="Оформить" />
+                                <Label layoutX="535.0" layoutY="123.0" text="Описание" />
+                                <Label fx:id="labelTypeInfo" layoutX="425.0" layoutY="148.0" text=". . ." />
+                                <Label layoutX="244.0" layoutY="226.0" text="Локация" />
+                                <JFXComboBox fx:id="comboRoom" layoutX="71.0" layoutY="255.0" prefHeight="26.0" prefWidth="199.0" promptText="Выберите комнату для аренды" />
+                                <Label layoutX="113.0" layoutY="294.0" text="Описание" />
+                                <Label fx:id="labelRoomInfo" layoutX="41.0" layoutY="319.0" text=". . ." />
+                                <Label layoutX="293.0" layoutY="285.0" text="или" />
+                                <JFXTextField fx:id="textLocationAddress" layoutX="348.0" layoutY="255.0" prefWidth="170.0" promptText="Адресс локации" />
+                                <JFXTextField fx:id="textLocationName" layoutX="346.0" layoutY="293.0" prefHeight="26.0" prefWidth="170.0" promptText="Название локации" />
+                                <Label layoutX="296.0" layoutY="416.0" prefHeight="35.0" prefWidth="90.0" text="Итоговая цена:" />
+                                <Label fx:id="labelPrice" layoutX="395.0" layoutY="426.0" text="            " />
+                                <JFXButton fx:id="buttonOrder" layoutX="605.0" layoutY="417.0" prefHeight="35.0" prefWidth="101.0" text="Оформить" />
                             </children>
                         </AnchorPane>
                     </content>
                 </Tab>
-                <Tab fx:id="tab2" text="Галлерея">
+                <Tab text="Галлерея">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <ScrollPane fx:id="scroll" layoutY="14.0" prefHeight="315.0" prefWidth="630.0">
+                                <ScrollPane layoutY="14.0" prefHeight="400.0" prefWidth="720.0">
                                     <content>
-                                        <AnchorPane fx:id="anchor" minHeight="0.0" minWidth="0.0" prefHeight="300.0" prefWidth="625.0" />
+                                        <AnchorPane fx:id="anchorScrollPhotosets" minHeight="0.0" minWidth="0.0" prefHeight="400.0" prefWidth="705.0" />
                                     </content>
                                 </ScrollPane>
-                                <JFXComboBox fx:id="comboPhotoset" layoutX="401.0" layoutY="329.0" promptText="Выберите категорию фото" />
+                                <JFXComboBox fx:id="comboPhotoset" layoutX="266.0" layoutY="426.0" promptText="Выберите категорию фото" />
                             </children>
                         </AnchorPane>
                     </content>

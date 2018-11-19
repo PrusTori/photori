@@ -16,7 +16,7 @@ public class DatabaseConnector {
         connection = DriverManager.getConnection(
                 "jdbc:postgresql://localhost:5432/photori",
                 "postgres",
-                "masterkey");
+                "pass129049p");
 
     }
 

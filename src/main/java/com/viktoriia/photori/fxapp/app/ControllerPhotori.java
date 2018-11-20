@@ -45,6 +45,9 @@ public class ControllerPhotori {
     @FXML
     private AnchorPane anchorScrollPhotosets;
 
+    @FXML
+    private GridPane gridPhotos;
+
     private DatabaseConnector databaseConnector;
 
     private double priceType = 0,
@@ -58,8 +61,8 @@ public class ControllerPhotori {
 
         databaseConnector = new DatabaseConnector();
 
-        comboRoom.setItems(setItemsCombo("select name from rooms"));
-        comboType.setItems(setItemsCombo("select title from types"));
+        comboRoom.setItems(setItemsCombo("select name from rooms order by name"));
+        comboType.setItems(setItemsCombo("select title from types order by title"));
 
         comboRoom.setOnAction(event -> {
 
@@ -165,42 +168,15 @@ public class ControllerPhotori {
 
         });
 
-        photosets = databaseConnector.getSql(
-                "select * from photosets"
-        );
-
-        photos = databaseConnector.getSql(
-                "select * from photos"
-        );
-
-        Label labelPhotosetTitle1 = new Label(photosets[1][3]);
-        ImageView imageViewPhoto1 = new ImageView(photos[1][2]);
-        imageViewPhoto1.setFitHeight(150);
-        imageViewPhoto1.setFitWidth(230);
-        imageViewPhoto1.setOpacity(0.75);
-        imageViewPhoto1.setOnMouseEntered(event -> imageViewPhoto1.setOpacity(1));
-        imageViewPhoto1.setOnMouseExited(event -> imageViewPhoto1.setOpacity(0.75));
-        ImageView imageViewPhoto2 = new ImageView(photos[2][2]);
-        imageViewPhoto2.setFitHeight(150);
-        imageViewPhoto2.setFitWidth(230);
-        imageViewPhoto2.setOpacity(0.75);
-        imageViewPhoto2.setOnMouseEntered(event -> imageViewPhoto2.setOpacity(1));
-        imageViewPhoto2.setOnMouseExited(event -> imageViewPhoto2.setOpacity(0.75));
-        ImageView imageViewPhoto3 = new ImageView(photos[3][2]);
-        imageViewPhoto3.setFitHeight(150);
-        imageViewPhoto3.setFitWidth(230);
-        imageViewPhoto3.setOpacity(0.75);
-        imageViewPhoto3.setOnMouseEntered(event -> imageViewPhoto3.setOpacity(1));
-        imageViewPhoto3.setOnMouseExited(event -> imageViewPhoto3.setOpacity(0.75));
-        GridPane gridPhotos = new GridPane();
-        gridPhotos.add(labelPhotosetTitle1, 1, 0);
-        gridPhotos.add(imageViewPhoto1, 0, 1);
-        gridPhotos.add(imageViewPhoto2, 1, 1);
-        gridPhotos.add(imageViewPhoto3, 2, 1);
-//        gridPhotos.getChildren().get(0).setLayoutX(100);
-
-        anchorScrollPhotosets.getChildren().addAll(gridPhotos);
-        anchorScrollPhotosets.getChildren().get(0).setLayoutX(5);
+        comboPhotoset.setItems(setItemsCombo("select title from photosets order by title"));
+        comboPhotoset.setOnAction(event -> {
+            anchorScrollPhotosets.getChildren().removeAll(gridPhotos);
+            if (comboPhotoset.getSelectionModel().isSelected(0)) {
+                comboPhotoset.getSelectionModel().clearSelection();
+            } else {
+                selectPhotoset();
+            }
+        });
 
     }
 
@@ -268,6 +244,40 @@ public class ControllerPhotori {
             priceRoom = 0;
         }
         labelPrice.setText(Double.toString(priceType + priceOverPhoto + priceRoom));
+    }
+
+    private void selectPhotoset() {
+
+        photos = databaseConnector.getSql(
+                "select * from photos where id_photoset = " +
+                        "(select id_photoset from photosets where title = '" +
+                        comboPhotoset.getSelectionModel().getSelectedItem() + "') " +
+                        "order by path"
+        );
+
+        gridPhotos = new GridPane();
+
+        for (int i = 1, j = 0, k = 0; i < photos[0].length; i++) {
+
+            ImageView imageViewPhoto = new ImageView(photos[i][2]);
+            imageViewPhoto.setFitHeight(150);
+            imageViewPhoto.setFitWidth(230);
+            imageViewPhoto.setOpacity(0.75);
+            imageViewPhoto.setOnMouseEntered(event -> imageViewPhoto.setOpacity(1));
+            imageViewPhoto.setOnMouseExited(event -> imageViewPhoto.setOpacity(0.75));
+
+            if (j == 3) {
+                j = 0;
+                k++;
+            }
+            gridPhotos.add(imageViewPhoto, j++, k);
+
+        }
+
+        anchorScrollPhotosets.getChildren().addAll(gridPhotos);
+        anchorScrollPhotosets.getChildren().get(0).setLayoutX(5.5);
+        anchorScrollPhotosets.setPrefHeight(gridPhotos.getPrefHeight());
+
     }
 
 }

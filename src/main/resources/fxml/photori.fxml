@@ -11,7 +11,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="500.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.viktoriia.photori.fxapp.app.ControllerPhotori">
+<AnchorPane prefHeight="500.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.viktoriia.photori.fxapp.app.ControllerPhotori">
     <children>
         <JFXTabPane prefHeight="500.0" prefWidth="720.0">
             <tabs>

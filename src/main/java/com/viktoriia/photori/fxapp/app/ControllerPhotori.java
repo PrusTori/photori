@@ -257,7 +257,7 @@ public class ControllerPhotori {
 
         gridPhotos = new GridPane();
 
-        for (int i = 1, j = 0, k = 0; i < photos[0].length; i++) {
+        for (int i = 1, j = 0, k = 0; i < photos.length; i++) {
 
             ImageView imageViewPhoto = new ImageView(photos[i][2]);
             imageViewPhoto.setFitHeight(150);

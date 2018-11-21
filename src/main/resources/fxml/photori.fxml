@@ -6,61 +6,333 @@
 <?import com.jfoenix.controls.JFXTabPane?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import com.jfoenix.controls.JFXTimePicker?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="500.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.viktoriia.photori.fxapp.app.ControllerPhotori">
+<HBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.viktoriia.photori.fxapp.app.ControllerPhotori">
     <children>
-        <JFXTabPane prefHeight="500.0" prefWidth="720.0">
+        <JFXTabPane HBox.hgrow="ALWAYS">
             <tabs>
-                <Tab text="Сделать заказ">
+                <Tab text="Оформить заказ">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="260.0">
+                        <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <Label layoutX="41.0" layoutY="15.0" text="Личная информация" />
-                                <JFXTextField fx:id="textName" layoutX="14.0" layoutY="45.0" prefHeight="25.0" prefWidth="170.0" promptText="Введите ФИО" />
-                                <JFXTextField fx:id="textPhone" layoutX="14.0" layoutY="87.0" prefHeight="25.0" prefWidth="170.0" promptText="Номер телефона" />
-                                <JFXTextField fx:id="textMail" layoutX="14.0" layoutY="130.0" prefHeight="25.0" prefWidth="170.0" promptText="e-mail" />
-                                <Label layoutX="265.0" layoutY="15.0" text="Дата и время" />
-                                <JFXDatePicker fx:id="date" layoutX="233.0" layoutY="45.0" prefHeight="25.0" prefWidth="170.0" />
-                                <JFXTimePicker fx:id="time" layoutX="233.0" layoutY="90.0" prefHeight="25.0" prefWidth="170.0" />
-                                <JFXTextField fx:id="textTime" layoutX="245.0" layoutY="134.0" prefHeight="26.0" prefWidth="118.0" promptText="Количесво часов" />
-                                <Label layoutX="530.0" layoutY="15.0" text="Вид съемки" />
-                                <JFXComboBox fx:id="comboType" focusColor="#eeeff2" layoutX="486.0" layoutY="46.0" prefHeight="25.0" prefWidth="170.0" promptText="Выберите вид съемки" />
-                                <JFXTextField fx:id="textOverPhotoQuantity" layoutX="435.0" layoutY="90.0" prefWidth="170.0" promptText="Дополительные фото" visible="false" />
-                                <Label layoutX="535.0" layoutY="123.0" text="Описание" />
-                                <Label fx:id="labelTypeInfo" layoutX="425.0" layoutY="148.0" text=". . ." />
-                                <Label layoutX="244.0" layoutY="226.0" text="Локация" />
-                                <JFXComboBox fx:id="comboRoom" layoutX="71.0" layoutY="255.0" prefHeight="26.0" prefWidth="199.0" promptText="Выберите комнату для аренды" />
-                                <Label layoutX="113.0" layoutY="294.0" text="Описание" />
-                                <Label fx:id="labelRoomInfo" layoutX="41.0" layoutY="319.0" text=". . ." />
-                                <Label layoutX="293.0" layoutY="285.0" text="или" />
-                                <JFXTextField fx:id="textLocationAddress" layoutX="348.0" layoutY="255.0" prefWidth="170.0" promptText="Адресс локации" />
-                                <JFXTextField fx:id="textLocationName" layoutX="346.0" layoutY="293.0" prefHeight="26.0" prefWidth="170.0" promptText="Название локации" />
-                                <Label layoutX="296.0" layoutY="416.0" prefHeight="35.0" prefWidth="90.0" text="Итоговая цена:" />
-                                <Label fx:id="labelPrice" layoutX="395.0" layoutY="426.0" text="            " />
-                                <JFXButton fx:id="buttonOrder" layoutX="605.0" layoutY="417.0" prefHeight="35.0" prefWidth="101.0" text="Оформить" />
+                                <HBox maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                                    <children>
+                                        <VBox maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="233.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" />
+                                                <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0" text="Личная информация">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </Label>
+                                                <Region maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="20.0" />
+                                                <JFXTextField fx:id="textName" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0" promptText="Введите ФИО">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </JFXTextField>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.0" />
+                                                <JFXTextField fx:id="textMail" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0" promptText="e-mail">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </JFXTextField>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.0" />
+                                                <JFXTextField fx:id="textPhone" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0" promptText="Номер телефона">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </JFXTextField>
+                                            </children>
+                                        </VBox>
+                                        <VBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" />
+                                                <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0" text="Дата и время">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </Label>
+                                                <Region maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="20.0" />
+                                                <JFXDatePicker fx:id="datePicker" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </JFXDatePicker>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.0" />
+                                                <JFXTimePicker fx:id="timePicker" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </JFXTimePicker>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.0" />
+                                                <JFXTextField fx:id="textTime" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0" promptText="Количесво часов">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </JFXTextField>
+                                            </children>
+                                        </VBox>
+                                        <VBox maxHeight="1.7976931348623157E308" minWidth="-Infinity" prefWidth="233.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" />
+                                                <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0" text="Вид съемки">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </Label>
+                                                <Region maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="20.0">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </Region>
+                                                <JFXComboBox fx:id="comboType" focusColor="#eeeff2" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0" promptText="Выберите вид съемки">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </JFXComboBox>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" />
+                                                <JFXTextField fx:id="textOverPhotoQuantity" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0" promptText="Дополительные фото" visible="false">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </JFXTextField>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" />
+                                                <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0" text="Описание">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </Label>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" />
+                                                <Label fx:id="labelTypeInfo" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.0" text=". . .">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                                <HBox maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                                    <children>
+                                        <VBox maxWidth="1.7976931348623157E308" prefWidth="150.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" />
+                                                <JFXComboBox fx:id="comboRoom" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="35.0" promptText="Выберите комнату для аренды" VBox.vgrow="ALWAYS">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </JFXComboBox>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" />
+                                                <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" text="Описание" />
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="10.0" />
+                                                <Label fx:id="labelRoomInfo" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.0" text=". . .">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                        <VBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0">
+                                            <children>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="10.0" />
+                                                <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="35.0" text="Локация" />
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" />
+                                                <Label alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0" text="или" />
+                                            </children>
+                                        </VBox>
+                                        <VBox maxWidth="1.7976931348623157E308" prefWidth="150.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" />
+                                                <JFXTextField fx:id="textLocationAddress" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="35.0" promptText="Адресс локации">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </JFXTextField>
+                                                <Region maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="15.0" />
+                                                <JFXTextField fx:id="textLocationName" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="35.0" promptText="Название локации">
+                                                    <VBox.margin>
+                                                        <Insets left="10.0" right="10.0" />
+                                                    </VBox.margin>
+                                                </JFXTextField>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                                <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="35.0" VBox.vgrow="ALWAYS">
+                                    <children>
+                                        <Region maxWidth="1.7976931348623157E308" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                                        <Label maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="35.0" prefWidth="90.0" text="Итоговая цена:">
+                                            <HBox.margin>
+                                                <Insets />
+                                            </HBox.margin>
+                                        </Label>
+                                        <Region maxWidth="-Infinity" minWidth="-Infinity" prefWidth="10.0" HBox.hgrow="ALWAYS" />
+                                        <Label fx:id="labelPrice" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="35.0" prefWidth="100.0" text="0.0" />
+                                        <Region maxWidth="1.7976931348623157E308" prefWidth="100.0" HBox.hgrow="ALWAYS" />
+                                        <JFXButton fx:id="buttonOrder" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="35.0" prefWidth="100.0" text="Оформить">
+                                            <HBox.margin>
+                                                <Insets right="15.0" />
+                                            </HBox.margin>
+                                        </JFXButton>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                                </HBox>
                             </children>
-                        </AnchorPane>
+                        </VBox>
                     </content>
                 </Tab>
                 <Tab text="Галлерея">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <VBox alignment="CENTER" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ScrollPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                          <content>
+                            <VBox fx:id="vboxScrollPhotosets" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+                          </content>
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </ScrollPane>
+                        <JFXComboBox fx:id="comboPhotoset" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin></JFXComboBox>
+                     </children></VBox>
+                    </content>
+                </Tab>
+                <Tab text="Администрирование">
+                    <content>
+                        <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <ScrollPane layoutY="14.0" prefHeight="400.0" prefWidth="720.0">
-                                    <content>
-                                        <AnchorPane fx:id="anchorScrollPhotosets" minHeight="0.0" minWidth="0.0" prefHeight="400.0" prefWidth="705.0" />
-                                    </content>
-                                </ScrollPane>
-                                <JFXComboBox fx:id="comboPhotoset" layoutX="266.0" layoutY="426.0" promptText="Выберите категорию фото" />
+                                <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="35.0" spacing="10.0" VBox.vgrow="ALWAYS">
+                                    <children>
+                                        <JFXComboBox fx:id="comboTable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="250.0">
+                                            <HBox.margin>
+                                                <Insets left="10.0" />
+                                            </HBox.margin>
+                                        </JFXComboBox>
+                                        <JFXButton fx:id="buttonAdd" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="100.0" text="Добавить" />
+                                        <JFXButton fx:id="buttonDelete" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="100.0" text="Удалить">
+                                            <HBox.margin>
+                                                <Insets />
+                                            </HBox.margin>
+                                        </JFXButton>
+                                        <JFXButton maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="90.0" text="Backup" />
+                                        <JFXButton maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="90.0" text="Restore">
+                                            <HBox.margin>
+                                                <Insets right="10.0" />
+                                            </HBox.margin>
+                                        </JFXButton>
+                                    </children>
+                                    <VBox.margin>
+                                        <Insets />
+                                    </VBox.margin>
+                                </HBox>
+                                <HBox maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+                           <children>
+                              <VBox maxWidth="1.7976931348623157E308" prefWidth="233.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <JFXTextField fx:id="textAdd1" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0">
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </JFXTextField>
+                                    <JFXTextField fx:id="textAdd2" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0">
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </JFXTextField>
+                                    <JFXTextField fx:id="textAdd3" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0">
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </JFXTextField>
+                                    <JFXTextField fx:id="textAdd4" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0">
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </JFXTextField>
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </VBox>
+                              <VBox maxWidth="1.7976931348623157E308" prefWidth="233.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </HBox.margin>
+                                 <children>
+                                    <JFXComboBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0">
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </JFXComboBox>
+                                    <JFXComboBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0">
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </JFXComboBox>
+                                    <JFXComboBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0">
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </JFXComboBox>
+                                    <JFXComboBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="30.0">
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </JFXComboBox>
+                                 </children>
+                              </VBox>
+                              <VBox alignment="CENTER" maxWidth="1.7976931348623157E308" prefWidth="233.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </HBox.margin>
+                                 <children>
+                                    <JFXDatePicker maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0">
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </JFXDatePicker>
+                                    <JFXTimePicker maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0">
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </JFXTimePicker>
+                                    <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </ImageView>
+                                 </children>
+                              </VBox>
+                           </children></HBox>
+                                <HBox maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="250.0" VBox.vgrow="ALWAYS">
+                                    <children>
+                                        <TableView fx:id="tableView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                                            <HBox.margin>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" />
+                                            </HBox.margin>
+                                        </TableView>
+                                    </children>
+                                </HBox>
                             </children>
-                        </AnchorPane>
+                        </VBox>
                     </content>
                 </Tab>
             </tabs>
         </JFXTabPane>
     </children>
-</AnchorPane>
+</HBox>

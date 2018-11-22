@@ -3,13 +3,13 @@ package com.viktoriia.photori.fxapp.app;
 
 import com.jfoenix.controls.*;
 
+import com.viktoriia.photori.db.DatabaseBackup;
 import com.viktoriia.photori.db.DatabaseConnector;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.HashSet;
 
 import javax.swing.*;
 
@@ -17,14 +17,20 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 import org.intellij.lang.annotations.Language;
 
@@ -44,7 +50,8 @@ public class ControllerPhotori {
             comboBoxAdd1, comboBoxAdd2, comboBoxAdd3, comboBoxAdd4;
 
     @FXML
-    private JFXButton buttonOrder, buttonAdd, buttonDelete;
+    private JFXButton buttonOrder, buttonAdd, buttonDelete,
+            buttonLogin, buttonBackup, buttonRestore;
 
     @FXML
     private JFXDatePicker datePicker, datePickerAdd;
@@ -64,6 +71,9 @@ public class ControllerPhotori {
     @FXML
     private TableView<String[]> tableView;
 
+    @FXML
+    private Tab tabAdmin;
+
     private DatabaseConnector databaseConnector;
 
     private double priceType = 0,
@@ -72,6 +82,7 @@ public class ControllerPhotori {
 
     @Language("SQL")
     private String sqlGetTable, tableName;
+    // "Passw0rd"
 
     private String[] columnNamesTableView, promptTextFieldsAdd, promptComboBoxesAdd;
     String[][] type, room, photosets, photos, columnNames;
@@ -81,6 +92,7 @@ public class ControllerPhotori {
     private ObservableList<String>[] comboBoxesInTable;
     private int[] columnComboBoxesInTable, indexTextFieldsAdd, indexComboBoxesAdd;
 
+    private boolean adminAccess = false;
 
     public void initialize()
             throws SQLException, ClassNotFoundException {
@@ -99,6 +111,13 @@ public class ControllerPhotori {
                 "Типы фотосессий",
                 "Фотоотчеты"
         );
+
+        textOverPhotoQuantity.setOnKeyReleased(event -> {
+            calculatePriceTime();
+        });
+        textTime.setOnKeyReleased(event -> {
+            calculatePrice();
+        });
 
         comboRoom.setOnAction(event -> {
 
@@ -145,75 +164,14 @@ public class ControllerPhotori {
 
         });
         comboPhotoset.setOnAction(event -> {
-//            anchorScrollPhotosets.getChildren().removeAll(gridPhotos);
+            ObservableList<Node> children = vboxScrollPhotosets.getChildren();
+            vboxScrollPhotosets.getChildren().removeAll(children);
             if (comboPhotoset.getSelectionModel().isSelected(0)) {
                 comboPhotoset.getSelectionModel().clearSelection();
             } else {
                 selectPhotoset();
             }
         });
-
-        textOverPhotoQuantity.setOnKeyReleased(event -> {
-            calculatePriceTime();
-        });
-        textTime.setOnKeyReleased(event -> {
-            calculatePrice();
-        });
-
-        buttonOrder.setOnAction(event -> {
-
-            if ((textName.getText().isEmpty()
-                    || textPhone.getText().isEmpty()
-                    || textMail.getText().isEmpty()
-                    || datePicker.getValue() == null
-                    || timePicker.getValue() == null
-                    || textTime.getText().isEmpty()
-                    || comboType.getSelectionModel().isEmpty())
-                    && (comboRoom.getSelectionModel().isEmpty()
-                    || (textLocationAddress.getText().isEmpty()
-                    && textLocationName.getText().isEmpty()))
-            ) {
-                JOptionPane.showMessageDialog(
-                        JOptionPane.getRootFrame(),
-                        "Заполните обязательные поля ввода *\n" +
-                                "(ФИО, номер телефона, email, дату, время," +
-                                "\nколичество часов, вид съемки, комнату или адресс)"
-                );
-            } else {
-
-                databaseConnector.sql(
-                        "select create_order('" + textName.getText() + "', '"
-                                + textPhone.getText() + "', '"
-                                + textMail.getText() + "', '" +
-                                comboType.getSelectionModel().getSelectedItem() + "', " +
-                                "to_timestamp('" +
-                                datePicker.getValue().toString() + " " + timePicker.getValue().toString() +
-                                "', 'YYYY-MM-DD HH24:MI'), " +
-                                textTime.getText() + ", " +
-                                (comboRoom.getSelectionModel().getSelectedIndex() == 0
-                                        ? null
-                                        : "'" + comboRoom.getSelectionModel().getSelectedItem() + "'") + ", " +
-                                (textLocationAddress.isDisabled() || !comboRoom.getSelectionModel().isEmpty()
-                                        ? null
-                                        : "'" + textLocationAddress.getText() + "'") + ", " +
-                                (textLocationName.isDisabled() || !comboRoom.getSelectionModel().isEmpty()
-                                        ? null
-                                        : "'" + textLocationName.getText() + "'") + ", " +
-                                (textOverPhotoQuantity.getText().isEmpty()
-                                        ? "0"
-                                        : Integer.parseInt(textOverPhotoQuantity.getText())) + ", " +
-                                labelPrice.getText() + ")"
-                );
-
-                JOptionPane.showMessageDialog(
-                        JOptionPane.getRootFrame(),
-                        "Спасибо за проявленный Вами интерес к нашей фотостудии!\n" +
-                                "Мы свяжемся с Вами по указанным контактным данным."
-                );
-            }
-
-        });
-
         comboTable.setOnAction(event -> {
 
             clearAndHide(textAdd1, textAdd2, textAdd3, textAdd4);
@@ -361,6 +319,93 @@ public class ControllerPhotori {
 
         });
 
+        buttonOrder.setOnAction(event -> {
+
+            if ((textName.getText().isEmpty()
+                    || textPhone.getText().isEmpty()
+                    || textMail.getText().isEmpty()
+                    || datePicker.getValue() == null
+                    || timePicker.getValue() == null
+                    || textTime.getText().isEmpty()
+                    || comboType.getSelectionModel().isEmpty())
+                    && (comboRoom.getSelectionModel().isEmpty()
+                    || (textLocationAddress.getText().isEmpty()
+                    && textLocationName.getText().isEmpty()))
+            ) {
+                JOptionPane.showMessageDialog(
+                        JOptionPane.getRootFrame(),
+                        "Заполните обязательные поля ввода *\n" +
+                                "(ФИО, номер телефона, email, дату, время," +
+                                "\nколичество часов, вид съемки, комнату или адресс)"
+                );
+            } else {
+
+                databaseConnector.sql(
+                        "select create_order('" + textName.getText() + "', '"
+                                + textPhone.getText() + "', '"
+                                + textMail.getText() + "', '" +
+                                comboType.getSelectionModel().getSelectedItem() + "', " +
+                                "to_timestamp('" +
+                                datePicker.getValue().toString() + " " + timePicker.getValue().toString() +
+                                "', 'YYYY-MM-DD HH24:MI'), " +
+                                textTime.getText() + ", " +
+                                (comboRoom.getSelectionModel().getSelectedIndex() == 0
+                                        ? null
+                                        : "'" + comboRoom.getSelectionModel().getSelectedItem() + "'") + ", " +
+                                (textLocationAddress.isDisabled() || !comboRoom.getSelectionModel().isEmpty()
+                                        ? null
+                                        : "'" + textLocationAddress.getText() + "'") + ", " +
+                                (textLocationName.isDisabled() || !comboRoom.getSelectionModel().isEmpty()
+                                        ? null
+                                        : "'" + textLocationName.getText() + "'") + ", " +
+                                (textOverPhotoQuantity.getText().isEmpty()
+                                        ? "0"
+                                        : Integer.parseInt(textOverPhotoQuantity.getText())) + ", " +
+                                labelPrice.getText() + ")"
+                );
+
+                JOptionPane.showMessageDialog(
+                        JOptionPane.getRootFrame(),
+                        "Спасибо за проявленный Вами интерес к нашей фотостудии!\n" +
+                                "Мы свяжемся с Вами по указанным контактным данным."
+                );
+            }
+
+        });
+        buttonLogin.setOnAction(event -> {
+
+            if (!adminAccess) {
+
+                adminAccess = Boolean.parseBoolean(
+                        databaseConnector.getSql(
+                                "select * from check_available_admin_access('" +
+                                        DigestUtils.sha1Hex(
+                                                JOptionPane.showInputDialog("Введите пароль:")
+                                        ) + "')")[1][0]
+                                .replace("t", "true")
+                                .replace("f", "false"));
+                if (!adminAccess) {
+                    JOptionPane.showMessageDialog(
+                            JOptionPane.getRootFrame(),
+                            "Неверный пароль!"
+                    );
+                } else {
+                    tabAdmin.setDisable(false);
+                    tabAdmin.setText("Администрирование");
+                    buttonLogin.setText("Выход");
+                }
+            } else {
+                adminAccess = false;
+                tabAdmin.setDisable(true);
+                tabAdmin.setText("");
+                buttonLogin.setText("Логин");
+            }
+
+
+        });
+        buttonBackup.setOnAction(event -> DatabaseBackup.executeCommand("backup"));
+        buttonRestore.setOnAction(event -> DatabaseBackup.executeCommand("restore"));
+
     }
 
     private void calculatePriceTime() {
@@ -410,18 +455,21 @@ public class ControllerPhotori {
 
     private void selectPhotoset() {
 
-        /*photos = databaseConnector.getSql(
+        photos = databaseConnector.getSql(
                 "select * from photos where id_photoset = " +
                         "(select id_photoset from photosets where title = '" +
                         comboPhotoset.getSelectionModel().getSelectedItem() + "') " +
                         "order by path"
         );
 
-        gridPhotos = new GridPane();
+        /*gridPhotos = new GridPane();
         gridPhotos.setAlignment(Pos.CENTER);
-        gridPhotos.setPrefWidth(anchorScrollPhotosets.getPrefWidth());
+        gridPhotos.setPrefWidth(vboxScrollPhotosets.getPrefWidth());*/
 
         for (int i = 1, j = 0, k = 0; i < photos.length; i++) {
+
+            HBox hBox = new HBox();
+            hBox.setAlignment(Pos.CENTER);
 
             ImageView imageViewPhoto = new ImageView(photos[i][2]);
 
@@ -432,21 +480,23 @@ public class ControllerPhotori {
             imageViewPhoto.setOnMouseEntered(event -> imageViewPhoto.setOpacity(1));
             imageViewPhoto.setOnMouseExited(event -> imageViewPhoto.setOpacity(0.8));
 
-            if (j == 1) {
+            imageViewPhoto.setFitWidth(imageViewPhoto.getFitWidth() / 2);
+            imageViewPhoto.setFitHeight(imageViewPhoto.getFitHeight() / 2);
+
+            /*if (j == 1) {
                 j = 0;
                 k++;
             }
-            gridPhotos.add(imageViewPhoto, j++, k);
+            gridPhotos.add(imageViewPhoto, j++, k);*/
 
+            hBox.getChildren().add(imageViewPhoto);
+            vboxScrollPhotosets.getChildren().add(hBox);
         }
+        vboxScrollPhotosets.setSpacing(5);
 
-        anchorScrollPhotosets.getChildren().addAll(gridPhotos);
-        anchorScrollPhotosets.getChildren().get(0).setLayoutX(5.5);
-        anchorScrollPhotosets.setPrefHeight(gridPhotos.getPrefHeight());*/
-
-    }
-
-    private void setOrientation() {
+//        vboxScrollPhotosets.getChildren().addAll(gridPhotos);
+//        vboxScrollPhotosets.getChildren().get(0).setLayoutX(5.5);
+//        vboxScrollPhotosets.setPrefHeight(gridPhotos.getPrefHeight());
 
     }
 

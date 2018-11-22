@@ -6,6 +6,8 @@ import com.jfoenix.controls.*;
 import com.viktoriia.photori.db.DatabaseConnector;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -20,6 +22,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
@@ -37,16 +40,20 @@ public class ControllerPhotori {
             textAdd1, textAdd2, textAdd3, textAdd4;
 
     @FXML
-    private JFXComboBox<String> comboType, comboRoom, comboPhotoset, comboTable;
-
-    @FXML
-    private JFXDatePicker datePicker;
-
-    @FXML
-    private JFXTimePicker timePicker;
+    private JFXComboBox<String> comboType, comboRoom, comboPhotoset, comboTable,
+            comboBoxAdd1, comboBoxAdd2, comboBoxAdd3, comboBoxAdd4;
 
     @FXML
     private JFXButton buttonOrder, buttonAdd, buttonDelete;
+
+    @FXML
+    private JFXDatePicker datePicker, datePickerAdd;
+
+    @FXML
+    private JFXTimePicker timePicker, timePickerAdd;
+
+    @FXML
+    private ImageView imageViewAdd;
 
     @FXML
     private VBox vboxScrollPhotosets;
@@ -63,16 +70,35 @@ public class ControllerPhotori {
             priceOverPhoto = 0,
             priceRoom = 0;
 
-    String[][] type, room, photosets, photos;
+    @Language("SQL")
+    private String sqlGetTable, tableName;
+
+    private String[] columnNamesTableView, promptTextFieldsAdd, promptComboBoxesAdd;
+    String[][] type, room, photosets, photos, columnNames;
+
+    private JFXTextField[] textFieldsAdd;
+    private JFXComboBox<String>[] comboBoxesAdd;
+    private ObservableList<String>[] comboBoxesInTable;
+    private int[] columnComboBoxesInTable, indexTextFieldsAdd, indexComboBoxesAdd;
+
 
     public void initialize()
             throws SQLException, ClassNotFoundException {
 
         databaseConnector = new DatabaseConnector();
 
-        comboRoom.setItems(setItemsCombo("select name from rooms order by name"));
-        comboType.setItems(setItemsCombo("select title from types order by title"));
-        comboPhotoset.setItems(setItemsCombo("select title from photosets order by title"));
+        setItemsCombo(comboRoom, "select name from rooms order by name");
+        setItemsCombo(comboType, "select title from types order by title");
+        setItemsCombo(comboPhotoset, "select title from photosets order by title");
+        setItemsCombo(comboTable,
+                "Заказы",
+                "Галерея",
+                "Локации",
+                "Клиенты",
+                "Комнаты",
+                "Типы фотосессий",
+                "Фотоотчеты"
+        );
 
         comboRoom.setOnAction(event -> {
 
@@ -188,92 +214,153 @@ public class ControllerPhotori {
 
         });
 
-        comboTable.setItems(
-                FXCollections.observableArrayList(
-                        "- выбор -",
-                        "Клиенты",
-                        "Локации",
-                        "Комнаты",
-                        "Типы фотосетов",
-                        "Фотосеты",
-                        "Фотографии",
-                        "Заказы"
-                )
-        );
         comboTable.setOnAction(event -> {
+
+            clearAndHide(textAdd1, textAdd2, textAdd3, textAdd4);
+            clearAndHide(comboBoxAdd1, comboBoxAdd2, comboBoxAdd3, comboBoxAdd4);
+            clearAndHide(datePickerAdd, timePickerAdd);
+            tableView.setDisable(false);
 
             switch (comboTable.getSelectionModel().getSelectedIndex()) {
 
+                case -1:
                 case 0:
-
-                    break;
+                    tableView.setDisable(true);
+                    tableView.getColumns().clear();
+                    tableView.getItems().clear();
+//                    buttonAdd.setDisable(true);
+//                    buttonDelete.setDisable(true);
+                    comboTable.getSelectionModel().clearSelection();
+                    return;
 
                 case 1:
+                    sqlGetTable = "select o.id_order, c.\"e-mail\", t.title, o.date, " +
+                            "o.time, r.name, l.name, o.quantity_photos, o.price " +
+                            "from orders o, clients c, types t, rooms r, locations l " +
+                            "where o.id_client = c.id_client " +
+                            "and o.id_type = t.id_type " +
+                            "and o.id_room = r.id_room " +
+                            "and o.id_location = l.id_location " +
+                            "order by o.id_order";
+                    columnNamesTableView =
+                            new String[]{
+                                    "orders", "Email клиента", "Тип фотосессии", "Дата",
+                                    "Время", "Комната", "Локация", "Кол-во фотографий", "Сумма"
+                            };
 
-                    setTable(
-                            "select * from clients order by full_name",
-                            new String[]{"id_client", "full_name", "phone", "e-mail"},
-                            null, null
-                    );
-                    showAndSetValue(
-                            new JFXTextField[]{textAdd1, textAdd2, textAdd3},
-                            new int[]{1, 2, 3},
-                            new String[]{"ФИО", "Телефон", "Email"},
-                            null, null, null
-                    );
+                    comboBoxesInTable =
+                            new ObservableList[]{
+                                    setItemsCombo("select \"e-mail\" from clients order by \"e-mail\""),
+                                    setItemsCombo("select title from types order by title"),
+                                    setItemsCombo("select name from rooms order by name"),
+                                    setItemsCombo("select name from locations order by name")
+                            };
+                    comboBoxesInTable[0].remove(0);
+                    comboBoxesInTable[1].remove(0);
+                    comboBoxesInTable[2].remove(0);
+                    comboBoxesInTable[3].remove(0);
+                    columnComboBoxesInTable = new int[]{1, 2, 5, 6};
 
+                    textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2, textAdd3};
+                    indexTextFieldsAdd = new int[]{4, 7, 8};
+                    promptTextFieldsAdd = new String[]{"Время", "Кол-во фотографий", "Сумма"};
+                    textAdd4.setDisable(true);
+
+                    comboBoxesAdd = new JFXComboBox[]{comboBoxAdd1, comboBoxAdd2, comboBoxAdd3, comboBoxAdd4};
+                    indexComboBoxesAdd = new int[]{1, 2, 5, 6};
+                    promptComboBoxesAdd = new String[]{"Клиент", "Тип фотосессии", "Комната", "Локация"};
+
+                    setItemsCombo(comboBoxAdd1, "select \"e-mail\" from clients order by \"e-mail\"");
+                    setItemsCombo(comboBoxAdd2, "select title from types order by title");
+                    setItemsCombo(comboBoxAdd3, "select name from rooms order by name");
+                    setItemsCombo(comboBoxAdd4, "select name from locations order by name");
+                    comboBoxAdd1.getItems().remove(0);
+                    comboBoxAdd2.getItems().remove(0);
+                    comboBoxAdd3.getItems().remove(0);
+                    comboBoxAdd4.getItems().remove(0);
                     break;
 
                 case 2:
+                    sqlGetTable = "select p.id_photo, ps.title, p.path, p.title " +
+                            "from photos p, photosets ps " +
+                            "where p.id_photoset = ps.id_photoset " +
+                            "order by ps.title, p.path ";
+                    columnNamesTableView = new String[]{"photos", "Фотоотчет", "Путь", "Название"};
+
+                    comboBoxesInTable = new ObservableList[]{setItemsCombo("select title from photosets order by title")};
+                    comboBoxesInTable[0].remove(0);
+                    columnComboBoxesInTable = new int[]{1};
+
+                    textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2};
+                    indexTextFieldsAdd = new int[]{2, 3};
+                    promptTextFieldsAdd = new String[]{"Адрес", "Название"};
+
+                    comboBoxesAdd = new JFXComboBox[]{comboBoxAdd1};
+                    indexComboBoxesAdd = new int[]{1};
+                    promptComboBoxesAdd = new String[]{"Фотоотчет"};
+
+                    setItemsCombo(comboBoxAdd1, "select title from photosets order by title");
+                    comboBoxAdd1.getItems().remove(0);
 
                     break;
 
                 case 3:
-
+                    sqlGetTable = "select * from locations order by address";
+                    columnNamesTableView = new String[]{"locations", "Адрес", "Название"};
+                    textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2};
+                    indexTextFieldsAdd = new int[]{1, 2};
+                    promptTextFieldsAdd = new String[]{"Адрес", "Название"};
                     break;
 
                 case 4:
-
+                    sqlGetTable = "select * from clients order by full_name";
+                    columnNamesTableView = new String[]{"clients", "ФИО", "Номер телефона", "Email"};
+                    textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2, textAdd3};
+                    indexTextFieldsAdd = new int[]{1, 2, 3};
+                    promptTextFieldsAdd = new String[]{"ФИО", "Телефон", "Email"};
                     break;
 
                 case 5:
-
+                    sqlGetTable = "select * from rooms order by name";
+                    columnNamesTableView = new String[]{"rooms", "Название", "Площадь", "Цена за час", "Заметки"};
+                    textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2, textAdd3, textAdd4};
+                    indexTextFieldsAdd = new int[]{1, 2, 3, 4};
+                    promptTextFieldsAdd = new String[]{"Название", "Площадь", "Цена за час", "Заметки"};
                     break;
 
                 case 6:
-
+                    sqlGetTable = "select * from types order by title";
+                    columnNamesTableView = new String[]{"types", "Название", "Цена за час", "Кол-во фотографий", "Цена за доп. фотографию"};
+                    textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2, textAdd3, textAdd4};
+                    indexTextFieldsAdd = new int[]{1, 2, 3, 4};
+                    promptTextFieldsAdd = new String[]{"Название", "Цена за час", "Кол-во фотографий", "Цена за доп. фотографию"};
                     break;
 
                 case 7:
-
+                    sqlGetTable = "select * from photosets order by title";
+                    columnNamesTableView = new String[]{"photosets", "Дата", "Описание", "Название"};
+                    textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2};
+                    indexTextFieldsAdd = new int[]{1, 2};
+                    promptTextFieldsAdd = new String[]{"Описание", "Название"};
                     break;
 
             }
 
+            setTable();
+            showAndSetValue();
+//            setDisableButton();
+            tableName = tableView.getColumns().get(0).getText();
+            columnNames = databaseConnector.getSql("select * from " + tableName + " limit 0");
+            for (int i = 0; i < columnNames[0].length; i++) {
+                columnNames[0][i] = "\"" + columnNames[0][i] + "\"";
+            }
+
+            addRecord();
+            editCellTable();
+            deleteRecord();
+
         });
 
-
-    }
-
-    private ObservableList<String> setItemsCombo(
-            @Language("SQL") String sqlGenTable
-    ) {
-
-        String[] values = new String[FXCollections.observableArrayList(
-                databaseConnector.getSql(sqlGenTable)
-        ).size() - 1];
-
-        for (int i = 1; i <= values.length; i++)
-            values[i - 1] = FXCollections.observableArrayList(
-                    databaseConnector.getSql(sqlGenTable)
-            ).get(i)[0];
-
-        ObservableList<String> list = FXCollections.observableArrayList("- выбор -");
-        list.addAll(FXCollections.observableArrayList(
-                new HashSet<String>(Arrays.asList(values))
-        ).sorted());
-
-        return list;
     }
 
     private void calculatePriceTime() {
@@ -363,35 +450,179 @@ public class ControllerPhotori {
 
     }
 
+    private void showAndSetValue() {
 
-    private void setTable(@Language("SQL") String sql, String[] colName,
-                          ObservableList<String>[] comboItems, int[] indexColumnCombo) {
+        boolean isTextField = textFieldsAdd != null && indexTextFieldsAdd != null,
+                isCombo = comboBoxesAdd != null && indexComboBoxesAdd != null,
+                isTimestamp = datePickerAdd.getValue() != null && timePickerAdd.getValue() != null;
+
+        if (isTextField) {
+            int i = 0;
+            for (JFXTextField textField : textFieldsAdd) {
+                textField.setDisable(false);
+                textField.setVisible(true);
+                textField.setPromptText(promptTextFieldsAdd[i++]);
+            }
+        }
+
+        if (isCombo) {
+            int i = 0;
+            for (JFXComboBox comboBox : comboBoxesAdd) {
+                comboBox.setDisable(false);
+                comboBox.setVisible(true);
+                comboBox.setPromptText(promptComboBoxesAdd[i++]);
+            }
+        }
+
+        if (isTimestamp) {
+            datePickerAdd.setDisable(false);
+            datePickerAdd.setVisible(true);
+            timePickerAdd.setDisable(false);
+            timePickerAdd.setVisible(true);
+        }
+
+        tableView.setOnMouseClicked(action -> {
+
+            if (!tableView.getSelectionModel().isEmpty()) {
+                buttonAdd.setDisable(false);
+                buttonDelete.setDisable(false);
+
+                if (isTextField) {
+
+                    for (int t = 0; t < textFieldsAdd.length; t++) {
+                        for (int j = 0; j < tableView.getColumns().size(); j++) {
+                            if (j == indexTextFieldsAdd[t]) {
+                                textFieldsAdd[t].setText(tableView.getSelectionModel().getSelectedItem()[j]);
+                            }
+                        }
+                    }
+
+                } else {
+                    buttonAdd.setDisable(true);
+                }
+
+                if (isCombo) {
+
+                    for (int c = 0; c < comboBoxesAdd.length; c++) {
+                        for (int j = 0; j < tableView.getColumns().size(); j++) {
+                            if (j == indexComboBoxesAdd[c]) {
+                                comboBoxesAdd[c].setValue(tableView.getSelectionModel().getSelectedItem()[j]);
+                            }
+                        }
+                    }
+
+                }
+
+                if (isTimestamp) {
+                    if (tableName.equals("photosets")) {
+                        datePickerAdd.setValue(LocalDate.parse(
+                                tableView.getSelectionModel().getSelectedItem()[1]
+                                        .substring(0, 10)
+                                )
+                        );
+                        timePickerAdd.setValue(LocalTime.parse(
+                                tableView.getSelectionModel().getSelectedItem()[1]
+                                        .substring(11, 19)
+                                )
+                        );
+                    }
+                    if (tableName.equals("orders")) {
+                        datePickerAdd.setValue(LocalDate.parse(
+                                tableView.getSelectionModel().getSelectedItem()[3]
+                                        .substring(0, 10)
+                                )
+                        );
+                        timePickerAdd.setValue(LocalTime.parse(
+                                tableView.getSelectionModel().getSelectedItem()[3]
+                                        .substring(11, 19)
+                                )
+                        );
+                    }
+                }
+
+            }
+
+        });
+    }
+
+    private void setDisableButton() {
+
+        /*buttonAdd.setDisable(true);
+        buttonDelete.setDisable(true);
+
+        if (textFieldsAdd != null) {
+            for (JFXTextField textField1 : textFieldsAdd) {
+                textField1.setOnKeyReleased(event -> {
+
+                    for (JFXTextField textField2 : textFieldsAdd) {
+                        if (textField2.getText().isEmpty()) {
+                            buttonAdd.setDisable(true);
+                            break;
+                        }
+                        buttonAdd.setDisable(false);
+                    }
+
+                });
+            }
+        }*/
+
+    }
+
+    private void clearAndHide(JFXComboBox<String>... comboBoxes) {
+        for (JFXComboBox<String> comboBox : comboBoxes) {
+            comboBox.getItems().clear();
+            comboBox.setDisable(false);
+            comboBox.setVisible(false);
+        }
+    }
+
+    private void clearAndHide(JFXTextField... textFields) {
+        for (JFXTextField textField : textFields) {
+            textField.clear();
+            textField.setDisable(false);
+            textField.setVisible(false);
+        }
+    }
+
+    private void clearAndHide(
+            JFXDatePicker datePicker,
+            JFXTimePicker timePicker
+    ) {
+        datePicker.setValue(null);
+        timePicker.setValue(null);
+        datePicker.setVisible(false);
+        datePicker.setDisable(false);
+        timePicker.setVisible(false);
+        timePicker.setDisable(false);
+    }
+
+    private void setTable() {
 
         tableView.getColumns().clear();
         tableView.getItems().clear();
 
-        String[][] records = databaseConnector.getSql(sql);
+        String[][] records = databaseConnector.getSql(sqlGetTable);
 
         for (int i = 0, j = 0; i < records[0].length; i++) {
-            TableColumn<String[], String> tableColumn = new TableColumn<>(colName[i]);
+            TableColumn<String[], String> tableColumn = new TableColumn<>(columnNamesTableView[i]);
             final int col = i;
             tableColumn.setCellValueFactory(
                     (TableColumn.CellDataFeatures<String[], String> param) -> new SimpleStringProperty(param.getValue()[col]));
 
             boolean combo = false;
 
-            if (comboItems == null && indexColumnCombo == null) {
+            if (comboBoxesInTable == null && columnComboBoxesInTable == null) {
                 tableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
                 tableColumn.setEditable(true);
             } else {
-                for (int indexColumn : indexColumnCombo)
+                for (int indexColumn : columnComboBoxesInTable)
                     if (i == indexColumn) {
                         combo = true;
                         break;
                     }
             }
             if (combo) {
-                tableColumn.setCellFactory(ComboBoxTableCell.forTableColumn(comboItems[j++]));
+                tableColumn.setCellFactory(ComboBoxTableCell.forTableColumn(comboBoxesInTable[j++]));
             } else {
                 tableColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             }
@@ -407,84 +638,160 @@ public class ControllerPhotori {
 
     }
 
+    private void setItemsCombo(
+            JFXComboBox<String> comboBox,
+            @Language("SQL") String sqlGetColumn
+    ) {
 
-    private void showAndSetValue(JFXTextField[] textFields, int[] indexFields, String[] promptFields,
-                                 JFXComboBox[] comboBoxes, int[] indexCombos, String[] promptCombos) {
+        ObservableList<String[]> observableList =
+                FXCollections.observableArrayList(
+                        databaseConnector.getSql(sqlGetColumn)
+                );
 
-        boolean isTextField = textFields != null && indexFields != null,
-                isCombo = comboBoxes != null && indexCombos != null;
-
-        if (isTextField) {
-            int i = 0;
-            for (JFXTextField textField : textFields) {
-                textField.setDisable(false);
-                textField.setVisible(true);
-                textField.setPromptText(promptFields[i++]);
-            }
+        comboBox.getItems().add("- выбор -");
+        for (int i = 1; i < observableList.size(); i++) {
+            comboBox.getItems().add(observableList.get(i)[0]);
         }
 
-        if (isCombo) {
-            int i = 0;
-            for (JFXComboBox comboBox : comboBoxes) {
-                comboBox.setDisable(false);
-                comboBox.setVisible(true);
-                comboBox.setPromptText(promptCombos[i++]);
-            }
+    }
+
+    private void setItemsCombo(
+            JFXComboBox<String> comboBox,
+            String... values
+    ) {
+
+        comboBox.getItems().add("- выбор -");
+        for (String value : values) {
+            comboBox.getItems().add(value);
         }
 
-        tableView.setOnMouseClicked(action -> {
+    }
 
-            if (!tableView.getSelectionModel().isEmpty()) {
-                buttonAdd.setDisable(false);
-                buttonDelete.setDisable(false);
+    private ObservableList<String> setItemsCombo(@Language("SQL") String sql) {
+        String[][] records = databaseConnector.getSql(sql);
+        ObservableList<String> result = FXCollections.observableArrayList();
 
-                if (isTextField) {
+        for (String[] record : records) {
+            result.add(record[0]);
+        }
 
-                    for (int t = 0; t < textFields.length; t++) {
-                        for (int j = 0; j < tableView.getColumns().size(); j++) {
-                            if (j == indexFields[t]) {
-                                textFields[t].setText(tableView.getSelectionModel().getSelectedItem()[j]);
-                            }
-                        }
-                    }
+        return result;
+    }
 
-                } else {
-                    buttonAdd.setDisable(true);
+    private void addRecord() {
+        buttonAdd.setOnAction(event -> {
+            String values = "";
+            if (textFieldsAdd != null) {
+                for (JFXTextField textFieldAdd : textFieldsAdd) {
+                    values = values.concat(textFieldAdd.getText() + "', '");
                 }
+            }
+            if (!values.isEmpty()) {
+                values = values.substring(0, values.length() - 4);
+                String columns = Arrays.toString(columnNames[0]);
+                databaseConnector.sql(
+                        "insert into " + tableName
+                                + "(" + columns.substring(columns.indexOf(" ") + 1, columns.length() - 1) + ")"
+                                + " values('" + values
+                                .replaceAll("'null'", "null")
+                                .replaceAll("''", "null")
+                                + "')");
 
-                if (isCombo) {
-
-                    for (int c = 0; c < comboBoxes.length; c++) {
-                        for (int j = 0; j < tableView.getColumns().size(); j++) {
-                            if (j == indexCombos[c]) {
-                                comboBoxes[c].setValue(tableView.getSelectionModel().getSelectedItem()[j]);
-                            }
-                        }
+                if (textFieldsAdd != null) {
+                    for (JFXTextField textFieldAdd : textFieldsAdd) {
+                        textFieldAdd.clear();
                     }
-
                 }
-
+                tableView.getItems().add(
+                        databaseConnector.getSql(
+                                "select * from " + tableName
+                                        + " order by " + columnNamesTableView[0] + " desc limit 1"
+                        )[1]
+                );
             }
 
         });
     }
 
-
-    private void editCellTable(String tableName) {
-
+    private void editCellTable() {
         for (int i = 1; i < tableView.getColumns().size(); i++) {
             int finalI = i;
             tableView.getColumns().get(i).setOnEditCommit(actionEdit -> {
                 tableView.getFocusModel().getFocusedItem()[finalI] = String.valueOf(actionEdit.getNewValue());
+                String value = "'" + tableView.getFocusModel().getFocusedItem()[finalI] + "'";
+                switch (columnNamesTableView[0]) {
 
-                /*boolean update = databaseConnector.sql("update " + tableName
-                        + "," + finalI + "," + tableView.getFocusModel().getFocusedItem()[finalI]
-                        + "," + tableView.getFocusModel().getFocusedItem()[0]);
-*/
+                    case "photos":
+                        value = new String[]{
+                                value,
+                                "(select id_photoset from photosets " +
+                                        "where \"title\" = '"
+                                        + tableView.getFocusModel().getFocusedItem()[finalI]
+                                        + "')",
+                                value,
+                                value
+                        }[finalI];
+                        break;
+
+                    case "orders":
+                        value = new String[]{
+                                value,
+                                "(select id_client from clients " +
+                                        "where \"e-mail\" = '"
+                                        + tableView.getFocusModel().getFocusedItem()[finalI]
+                                        + "')",
+                                "(select id_type from types " +
+                                        "where title = '"
+                                        + tableView.getFocusModel().getFocusedItem()[finalI]
+                                        + "')",
+                                value,
+                                value,
+                                "(select id_room from rooms " +
+                                        "where name = '"
+                                        + tableView.getFocusModel().getFocusedItem()[finalI]
+                                        + "')",
+                                "(select id_location from locations " +
+                                        "where name = '"
+                                        + tableView.getFocusModel().getFocusedItem()[finalI]
+                                        + "')",
+                                value,
+                                value
+                        }[finalI];
+                        break;
+
+                    default:
+                        value = "'" + tableView.getFocusModel().getFocusedItem()[finalI] + "'";
+                        break;
+                }
+                databaseConnector.sql("update " + tableName
+                        + " set " + columnNames[0][finalI] + " = " + value
+                        + " where " + columnNames[0][0] + " = " + tableView.getFocusModel().getFocusedItem()[0]);
             });
-
         }
     }
 
+    private void deleteRecord() {
+        buttonDelete.setOnAction(eventDelete -> {
+            if (!tableView.getSelectionModel().isEmpty()) {
+                databaseConnector.sql(
+                        "delete from " + tableName
+                                + " where " + columnNames[0][0]
+                                + " = " + tableView.getSelectionModel().getSelectedItem()[0]);
+                tableView.getItems().remove(tableView.getSelectionModel().getSelectedIndex());
+                tableView.getSelectionModel().clearSelection();
+                buttonDelete.setDisable(true);
+            }
+        });
+    }
 
 }
+
+//todo проверка на существующую запись при добавлении и изменении
+//todo проверка на связи при удалении записи
+//todo create clients: unique full_name + nomer + email
+//todo create locations: unique address + name
+//todo create photos: unique id_photoset + path
+//todo убрать возможность оформлять заказ при занятом фотографе или комнате
+//todo изменить пустую строку на null при добавлении новой записи
+//todo выводить фотографию в админпанеле
+//todo добавление через комбобоксы

@@ -1,5 +1,6 @@
 package com.viktoriia.photori.db;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+
 public class DatabaseBackup {
 
     public DatabaseBackup() {
@@ -17,7 +19,12 @@ public class DatabaseBackup {
 
     public static void executeCommand(String operationType) {
 
-        File backupFilePath = new File(System.getProperty("user.home") + File.separator + "Backups" + File.separator);
+        File backupFilePath = new File(
+                System.getProperty("user.home")
+                        + File.separator
+                        + "Backups"
+                        + File.separator
+        );
         if (!backupFilePath.exists()) {
             File dir = backupFilePath;
             dir.mkdirs();
@@ -64,19 +71,19 @@ public class DatabaseBackup {
         switch (type) {
             case "backup":
                 commands.add("pg_dump");
-                commands.add("-h"); //database server host
+                commands.add("-h");
                 commands.add("localhost");
-                commands.add("-p"); //database server port number
+                commands.add("-p");
                 commands.add("5432");
-                commands.add("-U"); //connect as specified database user
+                commands.add("-U");
                 commands.add("postgres");
-                commands.add("-F"); //output file format (custom, directory, tar, plain text (default))
+                commands.add("-F");
                 commands.add("c");
-                commands.add("-b"); //include large objects in dump
-                commands.add("-v"); //verbose mode
-                commands.add("-f"); //output file or directory name
+                commands.add("-b");
+                commands.add("-v");
+                commands.add("-f");
                 commands.add(backupFilePath.getAbsolutePath() + File.separator + backupFileName);
-                commands.add("-d"); //database name
+                commands.add("-d");
                 commands.add("photori");
                 break;
             case "restore":

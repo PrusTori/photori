@@ -25,8 +25,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -43,7 +43,7 @@ public class ControllerPhotori {
     @FXML
     private JFXTextField textName, textPhone, textMail, textTime,
             textLocationAddress, textLocationName, textOverPhotoQuantity,
-            textAdd1, textAdd2, textAdd3, textAdd4;
+            textAdd1, textAdd2, textAdd3, textAdd4, textSearch;
 
     @FXML
     private JFXComboBox<String> comboType, comboRoom, comboPhotoset, comboTable,
@@ -66,13 +66,12 @@ public class ControllerPhotori {
     private VBox vboxScrollPhotosets;
 
     @FXML
-    private GridPane gridPhotos;
-
-    @FXML
     private TableView<String[]> tableView;
 
     @FXML
     private Tab tabAdmin;
+
+    private ObservableList<String[]> observableListTableView;
 
     private DatabaseConnector databaseConnector;
 
@@ -82,13 +81,12 @@ public class ControllerPhotori {
 
     @Language("SQL")
     private String sqlGetTable, tableName;
-    // "Passw0rd"
 
     private String[] columnNamesTableView, promptTextFieldsAdd, promptComboBoxesAdd;
     String[][] type, room, photosets, photos, columnNames;
 
     private JFXTextField[] textFieldsAdd;
-    private JFXComboBox<String>[] comboBoxesAdd;
+    private JFXComboBox[] comboBoxesAdd;
     private ObservableList<String>[] comboBoxesInTable;
     private int[] columnComboBoxesInTable, indexTextFieldsAdd, indexComboBoxesAdd;
 
@@ -117,6 +115,33 @@ public class ControllerPhotori {
         });
         textTime.setOnKeyReleased(event -> {
             calculatePrice();
+        });
+        textSearch.setOnKeyReleased(event -> {
+            if (!tableView.isDisable()) {
+
+                ObservableList<String[]> observableListSearchResult = FXCollections.observableArrayList();
+
+                for (int i = 0; i < observableListTableView.size(); i++) {
+                    for (int j = 0; j < observableListTableView.get(0).length; j++) {
+                        try {
+                            if (observableListTableView.get(i)[j].toLowerCase()
+                                    .contains(textSearch.getText().toLowerCase())) {
+                                observableListSearchResult.add(observableListTableView.get(i));
+                                System.out.println(Arrays.toString(observableListTableView.get(i)));
+                            }
+                        } catch (NullPointerException e) {
+                            tableView.getItems().clear();
+                        }
+                    }
+                }
+
+                if (textSearch.getText().equals("")) {
+                    tableView.setItems(observableListTableView);
+                } else {
+                    tableView.setItems(observableListSearchResult);
+                }
+
+            }
         });
 
         comboRoom.setOnAction(event -> {
@@ -172,11 +197,22 @@ public class ControllerPhotori {
                 selectPhotoset();
             }
         });
+
         comboTable.setOnAction(event -> {
 
-            clearAndHide(textAdd1, textAdd2, textAdd3, textAdd4);
-            clearAndHide(comboBoxAdd1, comboBoxAdd2, comboBoxAdd3, comboBoxAdd4);
-            clearAndHide(datePickerAdd, timePickerAdd);
+            textFieldsAdd = new JFXTextField[]{
+                    textAdd1, textAdd2, textAdd3, textAdd4
+            };
+            comboBoxesAdd = new JFXComboBox[]{
+                    comboBoxAdd1, comboBoxAdd2, comboBoxAdd3, comboBoxAdd4
+            };
+
+            indexComboBoxesAdd = null;
+            promptComboBoxesAdd = null;
+            comboBoxesInTable = null;
+            columnComboBoxesInTable = null;
+
+            clearAndHide();
             tableView.setDisable(false);
 
             switch (comboTable.getSelectionModel().getSelectedIndex()) {
@@ -186,8 +222,6 @@ public class ControllerPhotori {
                     tableView.setDisable(true);
                     tableView.getColumns().clear();
                     tableView.getItems().clear();
-//                    buttonAdd.setDisable(true);
-//                    buttonDelete.setDisable(true);
                     comboTable.getSelectionModel().clearSelection();
                     return;
 
@@ -197,9 +231,9 @@ public class ControllerPhotori {
                             "from orders o, clients c, types t, rooms r, locations l " +
                             "where o.id_client = c.id_client " +
                             "and o.id_type = t.id_type " +
-                            "and o.id_room = r.id_room " +
-                            "and o.id_location = l.id_location " +
-                            "order by o.id_order";
+                            "and (o.id_room = r.id_room " +
+                            "or o.id_location = l.id_location) " +
+                            "order by o.date";
                     columnNamesTableView =
                             new String[]{
                                     "orders", "Email клиента", "Тип фотосессии", "Дата",
@@ -222,7 +256,6 @@ public class ControllerPhotori {
                     textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2, textAdd3};
                     indexTextFieldsAdd = new int[]{4, 7, 8};
                     promptTextFieldsAdd = new String[]{"Время", "Кол-во фотографий", "Сумма"};
-                    textAdd4.setDisable(true);
 
                     comboBoxesAdd = new JFXComboBox[]{comboBoxAdd1, comboBoxAdd2, comboBoxAdd3, comboBoxAdd4};
                     indexComboBoxesAdd = new int[]{1, 2, 5, 6};
@@ -251,7 +284,7 @@ public class ControllerPhotori {
 
                     textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2};
                     indexTextFieldsAdd = new int[]{2, 3};
-                    promptTextFieldsAdd = new String[]{"Адрес", "Название"};
+                    promptTextFieldsAdd = new String[]{"Путь", "Название"};
 
                     comboBoxesAdd = new JFXComboBox[]{comboBoxAdd1};
                     indexComboBoxesAdd = new int[]{1};
@@ -268,6 +301,7 @@ public class ControllerPhotori {
                     textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2};
                     indexTextFieldsAdd = new int[]{1, 2};
                     promptTextFieldsAdd = new String[]{"Адрес", "Название"};
+                    comboBoxesAdd = null;
                     break;
 
                 case 4:
@@ -276,6 +310,7 @@ public class ControllerPhotori {
                     textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2, textAdd3};
                     indexTextFieldsAdd = new int[]{1, 2, 3};
                     promptTextFieldsAdd = new String[]{"ФИО", "Телефон", "Email"};
+                    comboBoxesAdd = null;
                     break;
 
                 case 5:
@@ -284,34 +319,42 @@ public class ControllerPhotori {
                     textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2, textAdd3, textAdd4};
                     indexTextFieldsAdd = new int[]{1, 2, 3, 4};
                     promptTextFieldsAdd = new String[]{"Название", "Площадь", "Цена за час", "Заметки"};
+                    comboBoxesAdd = null;
                     break;
 
                 case 6:
                     sqlGetTable = "select * from types order by title";
-                    columnNamesTableView = new String[]{"types", "Название", "Цена за час", "Кол-во фотографий", "Цена за доп. фотографию"};
+                    columnNamesTableView = new String[]{
+                            "types", "Название", "Цена за час", "Кол-во фотографий", "Цена за доп. фотографию"
+                    };
                     textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2, textAdd3, textAdd4};
                     indexTextFieldsAdd = new int[]{1, 2, 3, 4};
-                    promptTextFieldsAdd = new String[]{"Название", "Цена за час", "Кол-во фотографий", "Цена за доп. фотографию"};
+                    promptTextFieldsAdd = new String[]{
+                            "Название", "Цена за час", "Кол-во фотографий", "Цена за доп. фотографию"
+                    };
+                    comboBoxesAdd = null;
                     break;
 
                 case 7:
                     sqlGetTable = "select * from photosets order by title";
                     columnNamesTableView = new String[]{"photosets", "Дата", "Описание", "Название"};
                     textFieldsAdd = new JFXTextField[]{textAdd1, textAdd2};
-                    indexTextFieldsAdd = new int[]{1, 2};
+                    indexTextFieldsAdd = new int[]{2, 3};
                     promptTextFieldsAdd = new String[]{"Описание", "Название"};
+                    comboBoxesAdd = null;
                     break;
 
             }
 
             setTable();
-            showAndSetValue();
-//            setDisableButton();
             tableName = tableView.getColumns().get(0).getText();
+            showAndSetValue();
+            setDisableButton();
             columnNames = databaseConnector.getSql("select * from " + tableName + " limit 0");
             for (int i = 0; i < columnNames[0].length; i++) {
                 columnNames[0][i] = "\"" + columnNames[0][i] + "\"";
             }
+            observableListTableView = tableView.getItems();
 
             addRecord();
             editCellTable();
@@ -376,20 +419,22 @@ public class ControllerPhotori {
 
             if (!adminAccess) {
 
-                adminAccess = Boolean.parseBoolean(
-                        databaseConnector.getSql(
-                                "select * from check_available_admin_access('" +
-                                        DigestUtils.sha1Hex(
-                                                JOptionPane.showInputDialog("Введите пароль:")
-                                        ) + "')")[1][0]
-                                .replace("t", "true")
-                                .replace("f", "false"));
-                if (!adminAccess) {
+                try {
+                    adminAccess = Boolean.parseBoolean(
+                            databaseConnector.getSql(
+                                    "select * from check_available_admin_access('" +
+                                            DigestUtils.sha1Hex(
+                                                    JOptionPane.showInputDialog("Введите пароль:")
+                                            ) + "')")[1][0]
+                                    .replace("t", "true")
+                                    .replace("f", "false"));
+                } catch (Exception e) {
                     JOptionPane.showMessageDialog(
                             JOptionPane.getRootFrame(),
                             "Неверный пароль!"
                     );
-                } else {
+                }
+                if (adminAccess) {
                     tabAdmin.setDisable(false);
                     tabAdmin.setText("Администрирование");
                     buttonLogin.setText("Выход");
@@ -400,7 +445,6 @@ public class ControllerPhotori {
                 tabAdmin.setText("");
                 buttonLogin.setText("Логин");
             }
-
 
         });
         buttonBackup.setOnAction(event -> DatabaseBackup.executeCommand("backup"));
@@ -502,9 +546,12 @@ public class ControllerPhotori {
 
     private void showAndSetValue() {
 
-        boolean isTextField = textFieldsAdd != null && indexTextFieldsAdd != null,
-                isCombo = comboBoxesAdd != null && indexComboBoxesAdd != null,
-                isTimestamp = datePickerAdd.getValue() != null && timePickerAdd.getValue() != null;
+        textSearch.setDisable(false);
+
+        boolean isTextField = textFieldsAdd != null,
+                isComboBox = comboBoxesAdd != null,
+                isTimestamp = false,
+                isImageView = false;
 
         if (isTextField) {
             int i = 0;
@@ -515,7 +562,7 @@ public class ControllerPhotori {
             }
         }
 
-        if (isCombo) {
+        if (isComboBox) {
             int i = 0;
             for (JFXComboBox comboBox : comboBoxesAdd) {
                 comboBox.setDisable(false);
@@ -524,13 +571,23 @@ public class ControllerPhotori {
             }
         }
 
-        if (isTimestamp) {
+        if (tableName.equals("orders")
+                || tableName.equals("photosets")) {
+            isTimestamp = true;
             datePickerAdd.setDisable(false);
             datePickerAdd.setVisible(true);
             timePickerAdd.setDisable(false);
             timePickerAdd.setVisible(true);
         }
 
+        if (tableName.equals("photos")) {
+            isImageView = true;
+            imageViewAdd.setDisable(false);
+            imageViewAdd.setVisible(true);
+        }
+
+        boolean finalIsTimestamp = isTimestamp;
+        boolean finalIsImageView = isImageView;
         tableView.setOnMouseClicked(action -> {
 
             if (!tableView.getSelectionModel().isEmpty()) {
@@ -551,7 +608,7 @@ public class ControllerPhotori {
                     buttonAdd.setDisable(true);
                 }
 
-                if (isCombo) {
+                if (isComboBox) {
 
                     for (int c = 0; c < comboBoxesAdd.length; c++) {
                         for (int j = 0; j < tableView.getColumns().size(); j++) {
@@ -563,7 +620,7 @@ public class ControllerPhotori {
 
                 }
 
-                if (isTimestamp) {
+                if (finalIsTimestamp) {
                     if (tableName.equals("photosets")) {
                         datePickerAdd.setValue(LocalDate.parse(
                                 tableView.getSelectionModel().getSelectedItem()[1]
@@ -590,15 +647,20 @@ public class ControllerPhotori {
                     }
                 }
 
+                if (finalIsImageView) {
+                    if (tableName.equals("photos")) {
+                        imageViewAdd.setImage(
+                                new Image(tableView.getSelectionModel().getSelectedItem()[2])
+                        );
+                    }
+                }
+
             }
 
         });
     }
 
     private void setDisableButton() {
-
-        /*buttonAdd.setDisable(true);
-        buttonDelete.setDisable(true);
 
         if (textFieldsAdd != null) {
             for (JFXTextField textField1 : textFieldsAdd) {
@@ -614,36 +676,36 @@ public class ControllerPhotori {
 
                 });
             }
-        }*/
+        }
 
     }
 
-    private void clearAndHide(JFXComboBox<String>... comboBoxes) {
-        for (JFXComboBox<String> comboBox : comboBoxes) {
+    private void clearAndHide() {
+        textSearch.clear();
+        textSearch.setDisable(true);
+        buttonAdd.setDisable(true);
+        buttonDelete.setDisable(true);
+        for (JFXComboBox comboBox : comboBoxesAdd) {
             comboBox.getItems().clear();
-            comboBox.setDisable(false);
+            comboBox.setPromptText("");
+            comboBox.setDisable(true);
             comboBox.setVisible(false);
         }
-    }
-
-    private void clearAndHide(JFXTextField... textFields) {
-        for (JFXTextField textField : textFields) {
+        for (JFXTextField textField : textFieldsAdd) {
             textField.clear();
-            textField.setDisable(false);
+            textField.setPromptText("");
+            textField.setDisable(true);
             textField.setVisible(false);
         }
-    }
-
-    private void clearAndHide(
-            JFXDatePicker datePicker,
-            JFXTimePicker timePicker
-    ) {
-        datePicker.setValue(null);
-        timePicker.setValue(null);
-        datePicker.setVisible(false);
-        datePicker.setDisable(false);
-        timePicker.setVisible(false);
-        timePicker.setDisable(false);
+        datePickerAdd.setValue(null);
+        timePickerAdd.setValue(null);
+        datePickerAdd.setDisable(true);
+        datePickerAdd.setVisible(false);
+        timePickerAdd.setDisable(true);
+        timePickerAdd.setVisible(false);
+        imageViewAdd.setImage(null);
+        imageViewAdd.setDisable(true);
+        imageViewAdd.setVisible(false);
     }
 
     private void setTable() {
@@ -731,6 +793,46 @@ public class ControllerPhotori {
     private void addRecord() {
         buttonAdd.setOnAction(event -> {
             String values = "";
+            if (comboBoxesAdd != null) {
+                for (JFXComboBox comboBoxAdd : comboBoxesAdd) {
+
+                    switch (comboBoxAdd.getPromptText()) {
+                        case "Клиент":
+                            values = values.concat(
+                                    "(select \"id_client\" from clients where \"e-mail\" = '" +
+                                            comboBoxAdd.getSelectionModel().getSelectedItem() + "'), ' ");
+                            break;
+                        case "Тип фотосессии":
+                            values = values.concat(
+                                    "(select \"id_type\" from types where \"title\" = '" +
+                                            comboBoxAdd.getSelectionModel().getSelectedItem() + "'), ' ");
+                            break;
+                        case "Комната":
+                            values = values.concat(
+                                    "(select \"id_room\" from rooms where \"name\" = '" +
+                                            comboBoxAdd.getSelectionModel().getSelectedItem() + "'), ' ");
+                            break;
+                        case "Локация":
+                            values = values.concat(
+                                    "(select \"id_location\" from locations where \"name\" = '" +
+                                            comboBoxAdd.getSelectionModel().getSelectedItem() + "'), ' ");
+                            break;
+                        case "Фотоотчет":
+                            values = values.concat(
+                                    "(select \"id_photoset\" from photosets where \"title\" = '" +
+                                            comboBoxAdd.getSelectionModel().getSelectedItem() + "'), ' ");
+                            break;
+                    }
+
+                }
+            }
+            if (datePickerAdd.getValue() != null
+                    && timePickerAdd.getValue() != null) {
+                values = values.concat(
+                        datePickerAdd.getValue().toString() + " " +
+                                timePickerAdd.getValue().toString() + "', ' "
+                );
+            }
             if (textFieldsAdd != null) {
                 for (JFXTextField textFieldAdd : textFieldsAdd) {
                     values = values.concat(textFieldAdd.getText() + "', '");
@@ -738,26 +840,86 @@ public class ControllerPhotori {
             }
             if (!values.isEmpty()) {
                 values = values.substring(0, values.length() - 4);
-                String columns = Arrays.toString(columnNames[0]);
-                databaseConnector.sql(
+                String columns;
+                if (tableName.equals("orders")) {
+                    columns = "\"id_client\", \"id_type\", \"date\", \"time\", \"id_room\", " +
+                            "\"id_location\", \"quantity_photos\", \"price\"";
+                } else {
+                    columns = Arrays.toString(columnNames[0]);
+                }
+                String sql =
                         "insert into " + tableName
                                 + "(" + columns.substring(columns.indexOf(" ") + 1, columns.length() - 1) + ")"
                                 + " values('" + values
                                 .replaceAll("'null'", "null")
                                 .replaceAll("''", "null")
-                                + "')");
+                                + "')";
+
+                if (comboBoxesAdd != null) {
+                    sql = sql.replace("values('", "values(");
+                }
+
+                databaseConnector.sql(sql);
+
+                switch (tableName) {
+                    case "photos":
+                        tableView.getItems().add(
+                                new String[]{
+                                        databaseConnector.getSql(
+                                                "select max(id_photo) from photos"
+                                        )[0][0],
+                                        comboBoxAdd1.getSelectionModel().getSelectedItem(),
+                                        textAdd1.getText(),
+                                        textAdd2.getText()
+                                }
+                        );
+                        tableView.refresh();
+                        break;
+                    case "orders":
+                        tableView.getItems().add(
+                                new String[]{
+                                        databaseConnector.getSql(
+                                                "select max(id_order) from orders"
+                                        )[0][0],
+                                        comboBoxAdd1.getSelectionModel().getSelectedItem(),
+                                        comboBoxAdd2.getSelectionModel().getSelectedItem(),
+                                        datePickerAdd.getValue().toString() + " " +
+                                                timePickerAdd.getValue().toString(),
+                                        textAdd1.getText(),
+                                        comboBoxAdd3.getSelectionModel().getSelectedItem(),
+                                        comboBoxAdd4.getSelectionModel().getSelectedItem(),
+                                        textAdd2.getText(),
+                                        textAdd3.getText()
+                                }
+                        );
+                        tableView.refresh();
+                        break;
+                    default:
+                        tableView.getItems().add(
+                                databaseConnector.getSql(
+                                        "select * from " + tableName
+                                                + " order by " + columnNamesTableView[0] + " desc limit 1"
+                                )[1]
+                        );
+                        break;
+                }
+
 
                 if (textFieldsAdd != null) {
                     for (JFXTextField textFieldAdd : textFieldsAdd) {
                         textFieldAdd.clear();
                     }
                 }
-                tableView.getItems().add(
-                        databaseConnector.getSql(
-                                "select * from " + tableName
-                                        + " order by " + columnNamesTableView[0] + " desc limit 1"
-                        )[1]
-                );
+                if (comboBoxesAdd != null) {
+                    for (JFXComboBox comboBoxAdd : comboBoxesAdd) {
+                        comboBoxAdd.getSelectionModel().clearSelection();
+                    }
+                }
+                if (textFieldsAdd != null) {
+                    datePickerAdd.setValue(null);
+                    timePickerAdd.setValue(null);
+                }
+
             }
 
         });
@@ -835,13 +997,3 @@ public class ControllerPhotori {
     }
 
 }
-
-//todo проверка на существующую запись при добавлении и изменении
-//todo проверка на связи при удалении записи
-//todo create clients: unique full_name + nomer + email
-//todo create locations: unique address + name
-//todo create photos: unique id_photoset + path
-//todo убрать возможность оформлять заказ при занятом фотографе или комнате
-//todo изменить пустую строку на null при добавлении новой записи
-//todo выводить фотографию в админпанеле
-//todo добавление через комбобоксы
